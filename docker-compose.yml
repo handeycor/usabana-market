@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17.2
+    container_name: usabana_db
+    environment:
+      POSTGRES_DB: market
+      POSTGRES_USER: usabana
+      POSTGRES_PASSWORD: usabana123
+    ports:
+      - "5432:5432"
+    volumes:
+      - usabana_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  app:
+    build: .
+    container_name: usabana_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/market
+      SPRING_DATASOURCE_USERNAME: usabana
+      SPRING_DATASOURCE_PASSWORD: usabana123
+    ports:
+      - "8090:8090"
+    depends_on:
+      - db
+
+volumes:
+  usabana_data: {}
