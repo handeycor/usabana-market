@@ -1,20 +1,25 @@
 package com.usabana.market.web.config;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.Contact;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
+
     @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.platzi.market.web.controller"))
-                .build();
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Usabana Market API")
+                        .description("API REST para el sistema de gestión de productos y compras del mercado Usabana")
+                        .version("1.0.0")
+                        .contact(new Contact()
+                                .name("Equipo de Desarrollo 5")
+                                .email("desarrollo@usabana.edu.co")
+                        )
+                );
     }
 }
