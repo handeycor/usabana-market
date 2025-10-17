@@ -1,17 +1,18 @@
+-- init.sql: inicialización de la base de datos
 
 -- -----------------------------------------------------
--- Table "CATEGORIAS"
+-- Table "categorias"
 -- -----------------------------------------------------
-CREATE TABLE CATEGORIAS (
+CREATE TABLE categorias (
   id_categoria SERIAL PRIMARY KEY,
   descripcion VARCHAR(45) NOT NULL,
   estado BOOLEAN NOT NULL
 );
 
 -- -----------------------------------------------------
--- Table "PRODUCTOS"
+-- Table "productos"
 -- -----------------------------------------------------
-CREATE TABLE PRODUCTOS (
+CREATE TABLE productos (
   id_producto SERIAL PRIMARY KEY,
   nombre VARCHAR(45),
   id_categoria INT NOT NULL,
@@ -19,34 +20,49 @@ CREATE TABLE PRODUCTOS (
   precio_venta DECIMAL(16,2),
   cantidad_stock INT NOT NULL,
   estado BOOLEAN,
-  CONSTRAINT fk_PRODUCTOS_CATEGORIAS FOREIGN KEY (id_categoria)
-    REFERENCES CATEGORIAS (id_categoria)
+  CONSTRAINT fk_productos_categorias FOREIGN KEY (id_categoria)
+    REFERENCES categorias (id_categoria)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
 
 -- -----------------------------------------------------
--- Table "CLIENTES"
+-- Table "clientes"
 -- -----------------------------------------------------
-CREATE TABLE CLIENTES (
+CREATE TABLE clientes (
   id VARCHAR(20) PRIMARY KEY,
   nombre VARCHAR(40),
   apellidos VARCHAR(100),
-  celular NUMERIC,
+  celular BIGINT,
   direccion VARCHAR(80),
   correo_electronico VARCHAR(70)
 );
 
 -- -----------------------------------------------------
--- Table "COMPRAS"
+-- Table "compras"
 -- -----------------------------------------------------
-CREATE TABLE COMPRAS (
+CREATE TABLE compras (
   id_compra SERIAL PRIMARY KEY,
   id_cliente VARCHAR(20) NOT NULL,
   fecha TIMESTAMP,
   medio_pago CHAR(1),
-  -- Agrega aquí el resto de columnas necesarias
-  FOREIGN KEY (id_cliente) REFERENCES CLIENTES(id)
+  comentario VARCHAR(255),
+  estado CHAR(1),
+  FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+-- -----------------------------------------------------
+-- Table "compras_productos" (relación entre compras y productos)
+-- -----------------------------------------------------
+CREATE TABLE compras_productos (
+  id_compra INT NOT NULL,
+  id_producto INT NOT NULL,
+  cantidad INT,
+  total DECIMAL(16,2),
+  estado BOOLEAN,
+  PRIMARY KEY (id_compra, id_producto),
+  FOREIGN KEY (id_compra) REFERENCES compras(id_compra),
+  FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 );
 
 -- Inserts de datos iniciales
@@ -119,6 +135,8 @@ INSERT INTO clientes VALUES ('983824', 'Nicolás', 'Copernico', 3019392466, 'Cl 
 
 -- COMPRA
 INSERT INTO compras VALUES (1, '4546221', TO_TIMESTAMP('10/08/1992 17:30:00','DD/MM/YYYY HH24:MI:SS'), 'E', '', 'P');
+
+-- COMPRAS_PRODUCTOS
 INSERT INTO compras_productos VALUES (1, 1, 10, 3000, true);
 INSERT INTO compras_productos VALUES (1, 36, 1, 40000, true);
 INSERT INTO compras_productos VALUES (1, 27, 1, 9000, true);
