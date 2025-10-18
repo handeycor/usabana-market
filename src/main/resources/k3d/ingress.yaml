@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: market-ingress
+  namespace: usabana-market
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  ingressClassName: traefik
+  rules:
+    # Acceso por dominio local (requiere hosts en el cliente)
+    - host: market.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: market-service
+                port:
+                  number: 8090
+    # Acceso por IP del host (catch-all): permite http://<IP-HOST>/market/api
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: market-service
+                port:
+                  number: 8090

@@ -1,0 +1,89 @@
+# Solo Base de Datos (Postgres)
+# Nota: crea antes el ConfigMap desde db/init.sql con:
+#   kubectl create namespace usabana-market
+#   kubectl create configmap postgres-init-sql -n usabana-market --from-file=db/init.sql
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: usabana-market
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: usabana-market
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "usabana123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: usabana-market
+  labels:
+    app: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: usabana-market
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: "market"
+            - name: POSTGRES_USER
+              value: "usabana"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init-sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: init-sql
+          configMap:
+            name: postgres-init-sql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
