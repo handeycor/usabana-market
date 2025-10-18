@@ -6,14 +6,14 @@ namespace: usabana-market
 
 resources:
   # Solo BD (Namespace, Secret, Service, StatefulSet de Postgres)
-  - src/main/resources/k3d/postgres-service.yaml
+  - postgres-service.yaml
 
 # Genera el ConfigMap 'postgres-init-sql' desde el archivo db/init.sql (no se incrusta el contenido)
 configMapGenerator:
   - name: postgres-init-sql
     files:
       # key: ruta-al-archivo (ruta relativa a este kustomization.yaml)
-      - init.sql=db/init.sql
+      - init.sql=./db/init.sql
 
 generatorOptions:
   # Evita que Kustomize agregue el sufijo hash al nombre del ConfigMap, para que coincida con el StatefulSet
