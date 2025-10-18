@@ -4,11 +4,10 @@ metadata:
   name: market-ingress
   namespace: usabana-market
   annotations:
-    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   ingressClassName: traefik
   rules:
-    # Acceso por dominio local (requiere hosts en el cliente)
     - host: market.local
       http:
         paths:
@@ -19,6 +18,7 @@ spec:
                 name: market-service
                 port:
                   number: 8090
+
     # Acceso por IP del host (catch-all): permite http://<IP-HOST>/market/api
     - http:
         paths:
