@@ -13,7 +13,7 @@ configMapGenerator:
   - name: postgres-init-sql
     files:
       # key: ruta-al-archivo (ruta relativa a este kustomization.yaml)
-      - init.sql=./db/init.sql
+      - init.sql=db/init.sql
 
 generatorOptions:
   # Evita que Kustomize agregue el sufijo hash al nombre del ConfigMap, para que coincida con el StatefulSet

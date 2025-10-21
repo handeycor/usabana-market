@@ -1,8 +1,10 @@
 package com.usabana.market.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class Product {
     private Integer productId;
     private String name;

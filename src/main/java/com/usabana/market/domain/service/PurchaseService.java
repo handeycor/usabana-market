@@ -5,6 +5,7 @@ import com.usabana.market.domain.repository.PurchaseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,9 @@ public class PurchaseService {
     }
 
     public Purchase save(Purchase purchase) {
+        if (purchase.getDate() == null) {
+            purchase.setDate(LocalDateTime.now());
+        }
         return purchaseRepository.save(purchase);
     }
 }
