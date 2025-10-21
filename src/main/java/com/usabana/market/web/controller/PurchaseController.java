@@ -2,7 +2,7 @@ package com.usabana.market.web.controller;
 
 import com.usabana.market.domain.Purchase;
 import com.usabana.market.domain.service.PurchaseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/purchases")
+@AllArgsConstructor
 public class PurchaseController {
-    @Autowired
-    private PurchaseService purchaseService;
+
+    private final PurchaseService purchaseService;
 
     @GetMapping("/all")
     public ResponseEntity<List<Purchase>> getAll() {

@@ -2,16 +2,17 @@ package com.usabana.market.domain.service;
 
 import com.usabana.market.domain.Purchase;
 import com.usabana.market.domain.repository.PurchaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class PurchaseService {
-    @Autowired
-    private PurchaseRepository purchaseRepository;
+
+    private final PurchaseRepository purchaseRepository;
 
     public List<Purchase> getAll() {
         return purchaseRepository.getAll();

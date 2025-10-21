@@ -5,20 +5,19 @@ import com.usabana.market.domain.repository.PurchaseRepository;
 import com.usabana.market.persistence.crud.CompraCrudRepository;
 import com.usabana.market.persistence.entity.Compra;
 import com.usabana.market.persistence.mapper.PurchaseMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@AllArgsConstructor
 public class CompraRepository implements PurchaseRepository {
 
-    @Autowired
-    private CompraCrudRepository compraCrudRepository;
+    private final CompraCrudRepository compraCrudRepository;
 
-    @Autowired
-    private PurchaseMapper mapper;
+    private final PurchaseMapper mapper;
 
     @Override
     public List<Purchase> getAll() {

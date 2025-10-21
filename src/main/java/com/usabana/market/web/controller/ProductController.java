@@ -2,7 +2,7 @@ package com.usabana.market.web.controller;
 
 import com.usabana.market.domain.Product;
 import com.usabana.market.domain.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@AllArgsConstructor
 public class ProductController {
-    @Autowired
-    private ProductService productService;
+
+    private final ProductService productService;
 
     @GetMapping("/all")
     public ResponseEntity<List<Product>> getAll() {
@@ -40,11 +41,9 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@PathVariable("id")int productId) {
-        if(productService.delete(productId)){
-            return new ResponseEntity(HttpStatus.OK);
-        } else {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> delete(@PathVariable("id") int productId) {
+        return productService.delete(productId)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
     }
 }

@@ -2,17 +2,17 @@ package com.usabana.market.domain.service;
 
 import com.usabana.market.domain.Product;
 import com.usabana.market.domain.repository.ProductRepository;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProductService {
-    @Autowired
-    private ProductRepository productRepository;
+
+    private final ProductRepository productRepository;
 
     public List<Product> getAll() {
         return productRepository.getAll();
