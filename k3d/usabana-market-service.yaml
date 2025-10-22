@@ -1,0 +1,87 @@
+# Solo Aplicación (Spring Boot)
+# Requiere que ya exista la BD (Service 'postgres' y Secret 'postgres-secret' en el ns usabana-market).
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: market-config
+  namespace: usabana-market
+data:
+  SPRING_PROFILES_ACTIVE: "dev"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/market"
+  SPRING_DATASOURCE_USERNAME: "usabana"
+  # SERVER_PORT: "8090"  # opcional; ya está en application-dev.properties
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: market-service
+  namespace: usabana-market
+  labels:
+    app: market-app
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8090
+      targetPort: 8090
+  selector:
+    app: market-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: market-app
+  namespace: usabana-market
+  labels:
+    app: market-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: market-app
+  template:
+    metadata:
+      labels:
+        app: market-app
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:17.2
+          imagePullPolicy: IfNotPresent
+          command: ["sh","-c"]
+          args: ["until pg_isready -h postgres -p 5432 -d market; do echo waiting for postgres; sleep 2; done;"]
+      containers:
+        - name: app
+          image: docker.io/handeycor/usabana-market:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8090
+              name: http
+          envFrom:
+            - configMapRef:
+                name: market-config
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          readinessProbe:
+            tcpSocket:
+              port: 8090
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8090
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+

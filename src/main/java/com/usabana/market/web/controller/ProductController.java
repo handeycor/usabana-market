@@ -1,0 +1,49 @@
+package com.usabana.market.web.controller;
+
+import com.usabana.market.domain.Product;
+import com.usabana.market.domain.service.ProductService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/products")
+@AllArgsConstructor
+public class ProductController {
+
+    private final ProductService productService;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Product>> getAll() {
+        return new ResponseEntity<>(productService.getAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{Id}")
+    public ResponseEntity<Product> getProduct(@PathVariable("Id") int productId) {
+        return productService.getProduct(productId)
+                .map(product -> new ResponseEntity<>(product, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<Product>> getByCategory(@PathVariable("categoryId") int categoryId) {
+        return productService.getByCategory(categoryId)
+                .map(products -> new ResponseEntity<>(products, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Product> save(@RequestBody Product product) {
+        return new ResponseEntity<>(productService.save(product), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") int productId) {
+        return productService.delete(productId)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
+    }
+}

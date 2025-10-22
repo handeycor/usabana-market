@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17.2
+    container_name: usabana_db
+    environment:
+      POSTGRES_DB: market
+      POSTGRES_USER: usabana
+      POSTGRES_PASSWORD: usabana123
+    ports:
+      - "5432:5432"
+    volumes:
+      - usabana_data:/var/lib/postgresql/data
+      - ./k3d/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: handeycor/usabana-market:1.0.0
+    build: .
+    container_name: usabana_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/market
+      SPRING_DATASOURCE_USERNAME: usabana
+      SPRING_DATASOURCE_PASSWORD: usabana123
+    ports:
+      - "8090:8090"
+    entrypoint: ["/bin/bash","-c","echo 'Esperando a la base de datos...'; until (echo > /dev/tcp/db/5432) >/dev/null 2>&1; do sleep 1; done; echo 'Base de datos disponible'; exec java -jar /app/app.jar"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  usabana_data: {}
