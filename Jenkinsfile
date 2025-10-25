@@ -12,6 +12,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                // Dar permisos de ejecución a gradlew
+                sh 'chmod +x gradlew'
             }
         }
 
