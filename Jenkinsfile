@@ -6,6 +6,7 @@ pipeline {
         IMAGE_NAME = 'handeycor/usabana-market'
         K8S_NAMESPACE = 'usabana-market'
         GRADLE_OPTS = '-Dorg.gradle.jvmargs=-Xms256m -Xmx1024m -XX:MaxMetaspaceSize=512m'
+        JAVA_TOOL_OPTIONS = '-Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
@@ -19,9 +20,16 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Debug: verificar memoria disponible
+                sh 'free -m || echo "free command not available"'
+                sh 'echo "Java version:"'
+                sh 'java -version || true'
+                sh './gradlew --version || true'
+
                 // Usamos -x test para saltar las pruebas, --no-daemon para evitar problemas de memoria
-                // y --stacktrace para obtener información detallada si falla
-                sh './gradlew clean build -x test --no-daemon --stacktrace'
+                // --stacktrace para información detallada, --info para logs verbosos
+                // --max-workers=1 para reducir uso de memoria
+                sh './gradlew clean build -x test --no-daemon --stacktrace --info --max-workers=1 || (echo "Build failed, checking daemon logs..." && ls -la ~/.gradle/daemon/ && tail -n 200 ~/.gradle/daemon/*/daemon-*.log && exit 1)'
             }
         }
 
