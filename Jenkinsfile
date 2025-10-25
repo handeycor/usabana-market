@@ -33,10 +33,16 @@ pipeline {
             }
         }
 
-/*
+        parameters {
+            booleanParam(name: 'SKIP_TESTS', defaultValue: true, description: 'Si es true se salta la etapa de tests')
+        }
+
+        // Reemplazar la etapa Test existente por esta
         stage('Test') {
+            when {
+                expression { return !params.SKIP_TESTS }
+            }
             steps {
-                // Ejecuta los tests en una etapa separada (si quieres habilitarlos)
                 sh './gradlew test --no-daemon --stacktrace'
             }
             post {
@@ -44,7 +50,7 @@ pipeline {
                     junit '**/build/test-results/test/*.xml'
                 }
             }
-        }*/
+        }
 
         stage('Build Docker Image') {
             steps {
