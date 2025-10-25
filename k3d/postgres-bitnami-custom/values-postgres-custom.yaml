@@ -1,0 +1,20 @@
+image:
+  repository: handeycor/postgres
+  tag: latest
+  pullPolicy: IfNotPresent
+
+auth:
+  enablePostgresUser: true
+  postgresPassword: "usabana123"
+  username: "usabana"
+  password: "usabana123"
+  database: "market"
+
+primary:
+  persistence:
+    enabled: true
+    size: 8Gi
+
+global:
+  security:
+    allowInsecureImages: true

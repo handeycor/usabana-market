@@ -1,5 +1,10 @@
 -- init.sql: inicialización de la base de datos
 
+CREATE USER usabana WITH PASSWORD 'usabana123';
+CREATE DATABASE market OWNER usabana;
+GRANT ALL PRIVILEGES ON DATABASE market TO usabana;
+
+
 -- -----------------------------------------------------
 -- Table "categorias"
 -- -----------------------------------------------------
