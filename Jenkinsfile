@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         IMAGE_NAME = 'handeycor/usabana-market'
         K8S_NAMESPACE = 'usabana-market'
+        GRADLE_OPTS = '-Dorg.gradle.jvmargs=-Xms256m -Xmx1024m -XX:MaxMetaspaceSize=512m'
     }
 
     stages {
@@ -16,15 +17,16 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Usamos -x test para saltar las pruebas durante el build principal
-                sh './gradlew clean build -x test'
+                // Usamos -x test para saltar las pruebas, --no-daemon para evitar problemas de memoria
+                // y --stacktrace para obtener información detallada si falla
+                sh './gradlew clean build -x test --no-daemon --stacktrace'
             }
         }
 
         stage('Test') {
             steps {
                 // Ejecuta los tests en una etapa separada (si quieres habilitarlos)
-                sh './gradlew test'
+                sh './gradlew test --no-daemon --stacktrace'
             }
             post {
                 always {
@@ -84,7 +86,8 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+            // Usa deleteDir() en lugar de cleanWs() si el plugin no está disponible
+            deleteDir()
         }
         success {
             echo 'Pipeline completado exitosamente!'
