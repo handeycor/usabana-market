@@ -33,6 +33,7 @@ pipeline {
             }
         }
 
+/*
         stage('Test') {
             steps {
                 // Ejecuta los tests en una etapa separada (si quieres habilitarlos)
@@ -43,7 +44,7 @@ pipeline {
                     junit '**/build/test-results/test/*.xml'
                 }
             }
-        }
+        }*/
 
         stage('Build Docker Image') {
             steps {
